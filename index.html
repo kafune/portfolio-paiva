@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PAIVA — Photography</title>
+<meta name="description" content="Portfolio de fotografia de Paiva — street, natureza e arquitetura no Brasil.">
+<meta property="og:title" content="PAIVA — Photography">
+<meta property="og:description" content="Programador que fotografa o mundo real. Street, natureza e arquitetura no Brasil.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="photos/waterfall.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080808'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='bold' fill='%2339FF14' text-anchor='middle'>P</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;300;400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <script>
@@ -437,6 +443,22 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     transition: color 0.2s;
   }
   .lb-close:hover { color: var(--accent); }
+  .lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: var(--mono);
+    font-size: 20px;
+    padding: 12px 18px;
+    cursor: none;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .lb-nav:hover { color: var(--accent); border-color: var(--accent); }
+  .lb-prev { left: 32px; }
+  .lb-next { right: 32px; }
 
   /* ─── ABOUT ─── */
   #about { padding: 100px 40px; border-top: 1px solid var(--border); }
@@ -754,7 +776,9 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 <!-- Lightbox -->
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">[ ESC ] FECHAR</button>
+  <button class="lb-nav lb-prev" onclick="lbNavigate(-1)">&#8592;</button>
   <img id="lb-img" src="photos/waterfall.jpg" alt="" style="display:none">
+  <button class="lb-nav lb-next" onclick="lbNavigate(1)">&#8594;</button>
   <div class="lb-info" id="lb-info"></div>
 </div>
 
@@ -814,7 +838,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo 1 -->
     <div class="photo-item reveal" onclick="openLightbox('photos/waterfall.jpg','IMG_0042.RAW — Cachoeira, Mata Atlântica')">
-      <img src="photos/waterfall.jpg" alt="Cachoeira">
+      <img src="photos/waterfall.jpg" alt="Cachoeira" loading="lazy">
       <div class="photo-overlay">
         <!-- Variant A -->
         <div class="var-a-only">
@@ -836,7 +860,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo 2 -->
     <div class="photo-item reveal" onclick="openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')">
-      <img src="photos/centro-sp.jpg" alt="Centro SP ao pôr do sol">
+      <img src="photos/centro-sp.jpg" alt="Centro SP ao pôr do sol" loading="lazy">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0108.RAW</div>
@@ -854,7 +878,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo 3 -->
     <div class="photo-item reveal" onclick="openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')">
-      <img src="photos/vila-madalena.jpg" alt="SP urbano">
+      <img src="photos/vila-madalena.jpg" alt="SP urbano" loading="lazy">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0237.RAW</div>
@@ -872,7 +896,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo 4 -->
     <div class="photo-item reveal" onclick="openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')">
-      <img src="photos/parque.jpg" alt="Mata Atlântica">
+      <img src="photos/parque.jpg" alt="Mata Atlântica" loading="lazy">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0391.RAW</div>
@@ -890,7 +914,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo 5 -->
     <div class="photo-item reveal" onclick="openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')">
-      <img src="photos/pinacoteca.jpg" alt="SP à noite">
+      <img src="photos/pinacoteca.jpg" alt="SP à noite" loading="lazy">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0502.RAW</div>
@@ -908,7 +932,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo 6 -->
     <div class="photo-item reveal" onclick="openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')">
-      <img src="photos/liberdade.jpg" alt="SP ao crepúsculo">
+      <img src="photos/liberdade.jpg" alt="SP ao crepúsculo" loading="lazy">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0618.RAW</div>
@@ -975,13 +999,13 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Frames arquivados</div></div>
         <div class="stat"><div class="stat-num">2</div><div class="stat-label">Séries ativas</div></div>
         <div class="stat"><div class="stat-num">BR</div><div class="stat-label">Localização</div></div>
-        <div class="stat"><div class="stat-num">α7 IV</div><div class="stat-label">Câmera principal</div></div>
+        <div class="stat"><div class="stat-num">SL3</div><div class="stat-label">Câmera principal</div></div>
       </div>
     </div>
 
     <!-- Photo side -->
     <div class="about-img-wrap reveal" data-coords="−23.5° S · −46.6° W">
-      <img src="photos/waterfall.jpg" alt="Paiva">
+      <img src="photos/waterfall.jpg" alt="Paiva" loading="lazy">
       <div class="img-label var-a-only">paiva.jpg · 4:3</div>
     </div>
 
@@ -1026,14 +1050,14 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         <span class="cli-service"><span class="__cf_email__" data-cfemail="c8b8a9a1bea988ada5a9a1a4e6aba7a5">[email&#160;protected]</span></span>
         <span class="cli-arrow">→</span>
       </a>
-      <a class="contact-link-item" href="#">
+      <a class="contact-link-item" href="https://instagram.com/paiva_sk8" target="_blank" rel="noopener">
         <span class="cli-num">02</span>
-        <span class="cli-service">@paiva.foto</span>
+        <span class="cli-service">@paiva_sk8</span>
         <span class="cli-arrow">→</span>
       </a>
-      <a class="contact-link-item" href="#">
+      <a class="contact-link-item" href="https://github.com/kafune" target="_blank" rel="noopener">
         <span class="cli-num">03</span>
-        <span class="cli-service">github.com/paiva</span>
+        <span class="cli-service">github.com/kafune</span>
         <span class="cli-arrow">→</span>
       </a>
     </div>
@@ -1111,8 +1135,18 @@ const bootLines = [
 const bootEl = document.getElementById('boot-text');
 const bootDiv = document.getElementById('boot');
 
+function dismissBoot() {
+  bootDiv.classList.add('fade-out');
+  setTimeout(() => bootDiv.style.display = 'none', 900);
+}
+
+bootDiv.addEventListener('click', dismissBoot);
+
 async function runBoot() {
+  let skipped = false;
+  bootDiv.addEventListener('click', () => { skipped = true; }, { once: true });
   for (let i = 0; i < bootLines.length; i++) {
+    if (skipped) break;
     await new Promise(r => setTimeout(r, 90));
     const line = document.createElement('div');
     line.className = 'boot-line';
@@ -1121,9 +1155,8 @@ async function runBoot() {
     void line.offsetWidth;
     line.style.opacity = '1';
   }
-  await new Promise(r => setTimeout(r, 600));
-  bootDiv.classList.add('fade-out');
-  setTimeout(() => bootDiv.style.display = 'none', 900);
+  await new Promise(r => setTimeout(r, skipped ? 0 : 600));
+  dismissBoot();
 }
 runBoot();
 
@@ -1135,12 +1168,23 @@ const obs = new IntersectionObserver(entries => {
 revEls.forEach(el => obs.observe(el));
 
 // ─── LIGHTBOX ───
+const photoList = [
+  { src: 'photos/waterfall.jpg',    info: 'IMG_0042.RAW — Cachoeira, Mata Atlântica' },
+  { src: 'photos/centro-sp.jpg',    info: 'IMG_0108.RAW — Centro SP, Pôr do Sol' },
+  { src: 'photos/vila-madalena.jpg',info: 'IMG_0237.RAW — SP, Urbano' },
+  { src: 'photos/parque.jpg',       info: 'IMG_0391.RAW — Mata Atlântica, Floresta' },
+  { src: 'photos/pinacoteca.jpg',   info: 'IMG_0502.RAW — SP, Noite' },
+  { src: 'photos/liberdade.jpg',    info: 'IMG_0618.RAW — SP, Crepúsculo' },
+];
+let currentPhotoIdx = 0;
+
 function openLightbox(src, info) {
+  currentPhotoIdx = photoList.findIndex(p => p.src === src);
+  if (currentPhotoIdx === -1) currentPhotoIdx = 0;
   const lb = document.getElementById('lightbox');
   const img = document.getElementById('lb-img');
   const inf = document.getElementById('lb-info');
-  if (src) { img.src = src; img.style.display = 'block'; }
-  else { img.style.display = 'none'; }
+  img.src = src; img.style.display = 'block';
   inf.textContent = info;
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1149,10 +1193,22 @@ function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
+function lbNavigate(dir) {
+  currentPhotoIdx = (currentPhotoIdx + dir + photoList.length) % photoList.length;
+  const p = photoList[currentPhotoIdx];
+  document.getElementById('lb-img').src = p.src;
+  document.getElementById('lb-info').textContent = p.info;
+}
 document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeLightbox();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'ArrowRight') lbNavigate(1);
+    if (e.key === 'ArrowLeft')  lbNavigate(-1);
+  }
+});
 
 // ─── FORM ───
 function submitForm() {
@@ -1165,7 +1221,7 @@ function submitForm() {
 }
 
 // ─── TWEAKS ───
-let tweaks = Object.assign({}, TWEAK_DEFAULTS);
+let tweaks = Object.assign({}, TWEAK_DEFAULTS, JSON.parse(localStorage.getItem('paiva_tweaks') || '{}'));
 
 function setVariant(v, btn) {
   document.body.classList.remove('var-a', 'var-b');
@@ -1190,6 +1246,7 @@ function setCursorBlink(on) {
   persist();
 }
 function persist() {
+  localStorage.setItem('paiva_tweaks', JSON.stringify(tweaks));
   window.parent.postMessage({ type: '__edit_mode_set_keys', edits: tweaks }, '*');
 }
 

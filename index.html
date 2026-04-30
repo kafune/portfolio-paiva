@@ -834,104 +834,94 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
       <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/waterfall.jpg','IMG_0042.RAW — Cachoeira, Mata Atlântica')">OPEN</button>
     </div>
 
-    <!-- Photo 2 — placeholder -->
-    <div class="photo-item reveal" onclick="openLightbox('','IMG_0108.RAW — Centro SP, Noite')">
-      <div style="width:100%;height:100%;background:linear-gradient(135deg,#111 0%,#1a1a0f 100%);display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:0.1em;">IMG_0108<br><span style="color:var(--accent);font-size:8px;">// placeholder</span></span>
-      </div>
+    <!-- Photo 2 -->
+    <div class="photo-item reveal" onclick="openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')">
+      <img src="photos/centro-sp.jpg" alt="Centro SP ao pôr do sol">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0108.RAW</div>
           <div class="photo-exif">
             <span data-key="local">Centro SP</span>
             <span data-key="câmera">Sony α7 IV</span>
-            <span data-key="focal">35mm  f/1.4  1/30s</span>
-            <span data-key="iso">ISO 3200</span>
+            <span data-key="focal">24mm  f/2.8  1/60s</span>
+            <span data-key="iso">ISO 800</span>
           </div>
         </div>
         <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Centro SP · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation()">OPEN</button>
+      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')">OPEN</button>
     </div>
 
-    <!-- Photo 3 — placeholder -->
-    <div class="photo-item reveal" onclick="openLightbox('','IMG_0237.RAW — Vila Madalena, Grafite')">
-      <div style="width:100%;height:100%;background:linear-gradient(135deg,#0f0f1a 0%,#1a1115 100%);display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:0.1em;">IMG_0237<br><span style="color:var(--accent);font-size:8px;">// placeholder</span></span>
-      </div>
+    <!-- Photo 3 -->
+    <div class="photo-item reveal" onclick="openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')">
+      <img src="photos/vila-madalena.jpg" alt="SP urbano">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0237.RAW</div>
           <div class="photo-exif">
-            <span data-key="local">Vila Madalena</span>
+            <span data-key="local">SP · Urbano</span>
             <span data-key="câmera">Sony α7 IV</span>
-            <span data-key="focal">50mm  f/2.0  1/125s</span>
-            <span data-key="iso">ISO 800</span>
+            <span data-key="focal">28mm  f/5.6  1/125s</span>
+            <span data-key="iso">ISO 200</span>
           </div>
         </div>
-        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Vila Madalena · 2025</div>
+        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>SP Urbano · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation()">OPEN</button>
+      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')">OPEN</button>
     </div>
 
-    <!-- Photo 4 — placeholder -->
-    <div class="photo-item reveal">
-      <div style="width:100%;height:100%;background:linear-gradient(135deg,#0f1a0f 0%,#0a110a 100%);display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:0.1em;">IMG_0391<br><span style="color:var(--accent);font-size:8px;">// placeholder</span></span>
-      </div>
+    <!-- Photo 4 -->
+    <div class="photo-item reveal" onclick="openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')">
+      <img src="photos/parque.jpg" alt="Mata Atlântica">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0391.RAW</div>
           <div class="photo-exif">
-            <span data-key="local">Parque Estadual</span>
+            <span data-key="local">Mata Atlântica</span>
             <span data-key="câmera">Sony α7 IV</span>
-            <span data-key="focal">70mm  f/4.0  1/500s</span>
-            <span data-key="iso">ISO 200</span>
+            <span data-key="focal">16mm  f/4.0  1/200s</span>
+            <span data-key="iso">ISO 400</span>
           </div>
         </div>
-        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Parque · 2025</div>
+        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Floresta · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation()">OPEN</button>
+      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')">OPEN</button>
     </div>
 
-    <!-- Photo 5 — placeholder -->
-    <div class="photo-item reveal">
-      <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0f0f 0%,#110a0a 100%);display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:0.1em;">IMG_0502<br><span style="color:var(--accent);font-size:8px;">// placeholder</span></span>
-      </div>
+    <!-- Photo 5 -->
+    <div class="photo-item reveal" onclick="openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')">
+      <img src="photos/pinacoteca.jpg" alt="SP à noite">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0502.RAW</div>
           <div class="photo-exif">
-            <span data-key="local">Pinacoteca</span>
+            <span data-key="local">SP · Noite</span>
             <span data-key="câmera">Sony α7 IV</span>
-            <span data-key="focal">28mm  f/5.6  1/60s</span>
-            <span data-key="iso">ISO 640</span>
+            <span data-key="focal">28mm  f/5.6  30s</span>
+            <span data-key="iso">ISO 400</span>
           </div>
         </div>
-        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Pinacoteca · 2024</div>
+        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>SP Noite · 2024</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation()">OPEN</button>
+      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')">OPEN</button>
     </div>
 
-    <!-- Photo 6 — placeholder -->
-    <div class="photo-item reveal">
-      <div style="width:100%;height:100%;background:linear-gradient(135deg,#0a0f1a 0%,#060a11 100%);display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;">
-        <span style="font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:0.1em;">IMG_0618<br><span style="color:var(--accent);font-size:8px;">// placeholder</span></span>
-      </div>
+    <!-- Photo 6 -->
+    <div class="photo-item reveal" onclick="openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')">
+      <img src="photos/liberdade.jpg" alt="SP ao crepúsculo">
       <div class="photo-overlay">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0618.RAW</div>
           <div class="photo-exif">
-            <span data-key="local">Liberdade</span>
+            <span data-key="local">SP · Crepúsculo</span>
             <span data-key="câmera">Sony α7 IV</span>
-            <span data-key="focal">85mm  f/1.8  1/250s</span>
+            <span data-key="focal">24mm  f/2.8  1/80s</span>
             <span data-key="iso">ISO 1600</span>
           </div>
         </div>
-        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Liberdade · 2024</div>
+        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>SP Crepúsculo · 2024</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation()">OPEN</button>
+      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')">OPEN</button>
     </div>
 
   </div>

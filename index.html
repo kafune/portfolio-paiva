@@ -3,805 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
 <title>PAIVA — Photography</title>
 <meta name="description" content="Portfolio de fotografia de Paiva — street, natureza e arquitetura no Brasil.">
+
+<!-- Open Graph / Twitter -->
 <meta property="og:title" content="PAIVA — Photography">
 <meta property="og:description" content="Programador que fotografa o mundo real. Street, natureza e arquitetura no Brasil.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="photos/waterfall.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PAIVA — Photography">
+<meta name="twitter:description" content="Programador que fotografa o mundo real.">
+<meta name="twitter:image" content="photos/waterfall.jpg">
+
+<!-- Icons / PWA -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080808'/><text x='16' y='22' font-family='monospace' font-size='16' font-weight='bold' fill='%2339FF14' text-anchor='middle'>P</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+
+<!-- Fonts: preconnect + preload do CSS para reduzir FOIT -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;300;400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;300;400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
+<!-- Preload do hero (imagem above-the-fold) -->
+<link rel="preload" as="image" href="photos/waterfall.jpg">
+
+<!-- Stylesheet -->
+<link rel="stylesheet" href="css/style.css">
+
+<!-- JSON-LD: Person + ImageGallery -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Paiva",
+  "jobTitle": "Fotógrafo",
+  "url": "https://paiva.example.com/",
+  "image": "photos/waterfall.jpg",
+  "sameAs": [
+    "https://instagram.com/paiva_sk8",
+    "https://github.com/kafune"
+  ]
+}
+</script>
+
+<!-- Tweak defaults (mantido inline para edit-mode externo) -->
 <script>
-const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "variant": "A",
   "accentColor": "#39FF14",
   "scanlines": true,
-  "cursorBlink": true
+  "cursorBlink": true,
+  "theme": "dark"
 }/*EDITMODE-END*/;
 </script>
-
-<style>
-  :root {
-    --bg: #080808;
-    --bg2: #0d0d0d;
-    --fg: #c8c8c8;
-    --accent: #39FF14;
-    --amber: #FFB700;
-    --dim: #444;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Space Grotesk', sans-serif;
-    --border: rgba(57,255,20,0.15);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: var(--mono);
-    cursor: none;
-    overflow-x: hidden;
-  }
-
-  /* Custom cursor */
-  #cursor {
-    position: fixed;
-    width: 10px; height: 10px;
-    background: var(--accent);
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: width 0.15s, height 0.15s, opacity 0.15s;
-    mix-blend-mode: screen;
-  }
-  #cursor-ring {
-    position: fixed;
-    width: 32px; height: 32px;
-    border: 1px solid var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-    transition: all 0.08s ease;
-    opacity: 0.5;
-  }
-  body:has(a:hover) #cursor, body:has(button:hover) #cursor { width: 20px; height: 20px; }
-
-  /* Scanlines overlay */
-  #scanlines {
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 9000;
-    display: none;
-  }
-  .scanlines-on #scanlines { display: block; }
-
-  /* ─── BOOT SCREEN ─── */
-  #boot {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 8000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 10vw;
-    transition: opacity 0.8s ease;
-  }
-  #boot.fade-out { opacity: 0; pointer-events: none; }
-  #boot-text {
-    font-family: var(--mono);
-    font-size: clamp(11px, 1.2vw, 14px);
-    color: var(--accent);
-    line-height: 1.7;
-    white-space: pre;
-  }
-  .boot-line { opacity: 0; animation: bootline 0.01s forwards; }
-  @keyframes bootline { to { opacity: 1; } }
-
-  /* ─── NAV ─── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 500;
-    padding: 20px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to bottom, rgba(8,8,8,0.95), transparent);
-    backdrop-filter: blur(2px);
-  }
-  .nav-logo {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 0.2em;
-    text-decoration: none;
-  }
-  .nav-logo span { color: var(--dim); }
-  .nav-links { display: flex; gap: 32px; }
-  .nav-links a {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--dim);
-    text-decoration: none;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-    position: relative;
-  }
-  .nav-links a::before { content: './'; color: var(--accent); opacity: 0; transition: opacity 0.2s; }
-  .nav-links a:hover { color: var(--fg); }
-  .nav-links a:hover::before { opacity: 1; }
-
-  /* ─── HERO ─── */
-  #hero {
-    height: 100vh;
-    display: flex;
-    align-items: flex-end;
-    padding: 0 40px 80px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background-image: url('photos/waterfall.jpg');
-    background-size: cover;
-    background-position: center 30%;
-    filter: brightness(0.4) contrast(1.1);
-    transform: scale(1.05);
-    transition: transform 0.1s linear;
-  }
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(8,8,8,0.9) 0%, transparent 50%, rgba(8,8,8,0.3) 100%);
-  }
-  .hero-grid-overlay {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .hero-content { position: relative; z-index: 2; }
-
-  /* Variant A hero */
-  .var-a .hero-content { max-width: 700px; }
-  .var-a .hero-prompt {
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.2em;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .var-a .hero-prompt::before { content: '>_'; }
-  .blink { animation: blink 1s step-end infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-  .var-a .hero-title {
-    font-family: var(--mono);
-    font-size: clamp(48px, 8vw, 100px);
-    font-weight: 700;
-    color: #fff;
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    margin-bottom: 24px;
-  }
-  .var-a .hero-title .acc { color: var(--accent); }
-  .var-a .hero-meta {
-    font-size: 11px;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .var-a .hero-meta span::before { content: '//'; margin-right: 6px; color: var(--accent); opacity: 0.5; }
-
-  /* Variant B hero */
-  .var-b .hero-content { max-width: 900px; }
-  .var-b .hero-eyebrow {
-    font-size: 10px;
-    color: var(--amber);
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .var-b .hero-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--amber); opacity: 0.3; max-width: 80px; }
-  .var-b .hero-title {
-    font-family: var(--sans);
-    font-size: clamp(60px, 11vw, 140px);
-    font-weight: 700;
-    color: #fff;
-    line-height: 0.85;
-    letter-spacing: -0.04em;
-    margin-bottom: 28px;
-  }
-  .var-b .hero-title em { font-style: normal; color: var(--amber); font-family: var(--mono); font-size: 0.45em; vertical-align: super; }
-  .var-b .hero-coords {
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 0.15em;
-    font-family: var(--mono);
-    display: flex;
-    gap: 20px;
-  }
-
-  /* ─── SECTION TITLES ─── */
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 48px;
-  }
-  .section-header .sh-prompt {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-  }
-  .section-header h2 {
-    font-size: 11px;
-    color: var(--dim);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    font-weight: 400;
-  }
-  .section-header::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* ─── GALLERY — VARIANT A ─── */
-  .var-a #gallery { padding: 100px 40px; }
-  .var-a .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-  }
-  .var-a .photo-item {
-    position: relative;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    background: #111;
-    cursor: none;
-  }
-  .var-a .photo-item img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s;
-    filter: brightness(0.9) saturate(0.8);
-  }
-  .var-a .photo-item:hover img {
-    transform: scale(1.06);
-    filter: brightness(1) saturate(1);
-  }
-  .var-a .photo-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    opacity: 0;
-    transition: opacity 0.3s;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-    font-family: var(--mono);
-  }
-  .var-a .photo-item:hover .photo-overlay { opacity: 1; }
-  .photo-filename { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 8px; }
-  .photo-exif { font-size: 9px; color: var(--dim); line-height: 1.8; }
-  .photo-exif span { display: block; }
-  .photo-exif span::before { content: attr(data-key) ': '; color: var(--fg); opacity: 0.5; }
-  .photo-open-btn {
-    position: absolute;
-    top: 16px; right: 16px;
-    font-size: 9px;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    padding: 4px 8px;
-    letter-spacing: 0.1em;
-    background: transparent;
-    cursor: none;
-    font-family: var(--mono);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .var-a .photo-item:hover .photo-open-btn { opacity: 1; }
-  .photo-open-btn:hover { background: var(--accent); color: #000; }
-
-  /* ─── GALLERY — VARIANT B ─── */
-  .var-b #gallery { padding: 100px 40px; }
-  .var-b .gallery-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 3px;
-  }
-  .var-b .photo-item {
-    position: relative;
-    overflow: hidden;
-    background: #111;
-    cursor: none;
-  }
-  .var-b .photo-item:first-child {
-    grid-row: 1 / 3;
-    aspect-ratio: unset;
-  }
-  .var-b .photo-item:not(:first-child) { aspect-ratio: 1; }
-  .var-b .photo-item img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    filter: brightness(0.85);
-  }
-  .var-b .photo-item:hover img { transform: scale(1.04); filter: brightness(1); }
-  .var-b .photo-overlay {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.4s;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
-    display: flex;
-    align-items: flex-end;
-    padding: 24px;
-  }
-  .var-b .photo-item:hover .photo-overlay { opacity: 1; }
-  .var-b .photo-coords {
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--amber);
-    letter-spacing: 0.15em;
-    line-height: 1.7;
-  }
-  .var-b .photo-open-btn {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
-    font-size: 9px;
-    color: #000;
-    background: var(--amber);
-    padding: 6px 14px;
-    letter-spacing: 0.15em;
-    border: none;
-    cursor: none;
-    font-family: var(--mono);
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-  }
-  .var-b .photo-item:hover .photo-open-btn {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  /* ─── LIGHTBOX ─── */
-  #lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.96);
-    z-index: 7000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s;
-  }
-  #lightbox.open { opacity: 1; pointer-events: all; }
-  #lightbox img {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    transform: scale(0.95);
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  #lightbox.open img { transform: scale(1); }
-  .lb-info {
-    position: absolute;
-    bottom: 40px; left: 50%;
-    transform: translateX(-50%);
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 0.2em;
-    text-align: center;
-  }
-  .lb-close {
-    position: absolute;
-    top: 32px; right: 40px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--dim);
-    background: none;
-    border: none;
-    cursor: none;
-    letter-spacing: 0.1em;
-    transition: color 0.2s;
-  }
-  .lb-close:hover { color: var(--accent); }
-  .lb-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--dim);
-    font-family: var(--mono);
-    font-size: 20px;
-    padding: 12px 18px;
-    cursor: none;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .lb-nav:hover { color: var(--accent); border-color: var(--accent); }
-  .lb-prev { left: 32px; }
-  .lb-next { right: 32px; }
-
-  /* ─── ABOUT ─── */
-  #about { padding: 100px 40px; border-top: 1px solid var(--border); }
-  .about-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: start;
-  }
-
-  /* Variant A about */
-  .var-a .terminal-window {
-    border: 1px solid var(--border);
-    background: #0a0a0a;
-  }
-  .terminal-titlebar {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-  }
-  .terminal-dot { width: 8px; height: 8px; border-radius: 50%; }
-  .td-r { background: #ff5f56; }
-  .td-y { background: #ffbd2e; }
-  .td-g { background: #27c93f; }
-  .terminal-body {
-    padding: 24px;
-    font-size: 12px;
-    line-height: 2;
-    color: var(--fg);
-  }
-  .t-cmd { color: var(--accent); }
-  .t-comment { color: var(--dim); }
-  .t-string { color: #7dd3fc; }
-  .t-key { color: var(--amber); }
-  .t-val { color: var(--fg); }
-  .t-prompt { color: var(--accent); margin-right: 8px; }
-
-  /* Variant B about */
-  .var-b .about-text-block { display: flex; flex-direction: column; gap: 24px; }
-  .var-b .about-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--amber);
-    letter-spacing: 0.3em;
-  }
-  .var-b .about-headline {
-    font-family: var(--sans);
-    font-size: clamp(32px, 4vw, 48px);
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-  .var-b .about-body {
-    font-family: var(--mono);
-    font-size: 12px;
-    line-height: 2;
-    color: var(--dim);
-    max-width: 480px;
-  }
-  .var-b .about-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 8px;
-  }
-  .var-b .stat {
-    border: 1px solid var(--border);
-    padding: 16px;
-  }
-  .var-b .stat-num {
-    font-family: var(--mono);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--amber);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .var-b .stat-label {
-    font-size: 9px;
-    color: var(--dim);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  .about-img-wrap {
-    position: relative;
-  }
-  .about-img-wrap img {
-    width: 100%;
-    aspect-ratio: 3/4;
-    object-fit: cover;
-    display: block;
-    filter: brightness(0.8) saturate(0.7);
-  }
-  .var-a .about-img-wrap::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border: 1px solid var(--accent);
-    opacity: 0.2;
-    z-index: 1;
-    pointer-events: none;
-  }
-  .var-a .img-label {
-    position: absolute;
-    bottom: -1px; left: 0;
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--bg);
-    background: var(--accent);
-    padding: 4px 10px;
-    letter-spacing: 0.1em;
-  }
-  .var-b .about-img-wrap::after {
-    content: attr(data-coords);
-    position: absolute;
-    bottom: 16px; right: 16px;
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--amber);
-    letter-spacing: 0.15em;
-    opacity: 0.8;
-  }
-
-  /* ─── CONTACT ─── */
-  #contact { padding: 100px 40px; border-top: 1px solid var(--border); }
-  .contact-inner { max-width: 700px; }
-  .var-a .contact-inner { max-width: 600px; }
-
-  /* Variant A contact */
-  .var-a .contact-intro {
-    font-size: 12px;
-    color: var(--dim);
-    line-height: 2;
-    margin-bottom: 40px;
-  }
-  .var-a .contact-intro .acc { color: var(--accent); }
-  .var-a .cli-input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    border: 1px solid var(--border);
-    background: #0a0a0a;
-    padding: 0;
-    margin-bottom: 16px;
-  }
-  .cli-prompt-label {
-    padding: 14px 16px;
-    font-size: 12px;
-    color: var(--accent);
-    border-right: 1px solid var(--border);
-    white-space: nowrap;
-    user-select: none;
-  }
-  .cli-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--fg);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 14px 16px;
-    caret-color: var(--accent);
-  }
-  .cli-submit {
-    padding: 14px 24px;
-    background: transparent;
-    border: none;
-    border-left: 1px solid var(--border);
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    cursor: none;
-    transition: background 0.2s, color 0.2s;
-  }
-  .cli-submit:hover { background: var(--accent); color: #000; }
-
-  /* Variant B contact */
-  .var-b .contact-headline {
-    font-family: var(--sans);
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 700;
-    color: #fff;
-    line-height: 0.9;
-    letter-spacing: -0.03em;
-    margin-bottom: 40px;
-  }
-  .var-b .contact-headline em { font-style: normal; color: var(--amber); }
-  .var-b .contact-links {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .contact-link-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 0;
-    border-top: 1px solid var(--border);
-    text-decoration: none;
-    transition: padding-left 0.3s;
-  }
-  .contact-link-item:last-child { border-bottom: 1px solid var(--border); }
-  .contact-link-item:hover { padding-left: 16px; }
-  .cli-num { font-size: 9px; color: var(--dim); letter-spacing: 0.1em; font-family: var(--mono); }
-  .cli-service { font-size: 14px; color: var(--fg); letter-spacing: 0.05em; font-family: var(--mono); flex: 1; }
-  .cli-arrow { font-size: 11px; color: var(--amber); opacity: 0; transition: opacity 0.2s; }
-  .contact-link-item:hover .cli-arrow { opacity: 1; }
-
-  /* ─── FOOTER ─── */
-  footer {
-    padding: 40px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  footer .f-left { font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
-  footer .f-right { font-size: 10px; color: var(--dim); letter-spacing: 0.1em; }
-  footer .f-right span { color: var(--accent); }
-
-  /* ─── TWEAKS PANEL ─── */
-  #tweaks-panel {
-    display: none;
-    position: fixed;
-    bottom: 24px; right: 24px;
-    background: #0d0d0d;
-    border: 1px solid var(--border);
-    padding: 20px;
-    z-index: 6000;
-    font-family: var(--mono);
-    font-size: 11px;
-    min-width: 240px;
-  }
-  #tweaks-panel.visible { display: block; }
-  .tp-title { color: var(--accent); font-size: 10px; letter-spacing: 0.2em; margin-bottom: 16px; }
-  .tp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 16px; }
-  .tp-label { color: var(--dim); font-size: 10px; letter-spacing: 0.1em; }
-  .tp-toggle {
-    display: flex;
-    gap: 0;
-  }
-  .tp-opt {
-    padding: 4px 10px;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    border: 1px solid var(--dim);
-    background: transparent;
-    color: var(--dim);
-    cursor: pointer;
-    font-family: var(--mono);
-    transition: all 0.15s;
-  }
-  .tp-opt.active { background: var(--accent); color: #000; border-color: var(--accent); }
-  .tp-opt:not(:last-child) { border-right: none; }
-  .tp-check {
-    width: 14px; height: 14px;
-    border: 1px solid var(--dim);
-    background: transparent;
-    appearance: none;
-    cursor: pointer;
-    position: relative;
-    flex-shrink: 0;
-  }
-  .tp-check:checked { background: var(--accent); border-color: var(--accent); }
-  .tp-color {
-    width: 28px; height: 20px;
-    border: 1px solid var(--dim);
-    background: transparent;
-    cursor: pointer;
-    padding: 0;
-  }
-
-  /* ─── VARIANT SWITCHING ─── */
-  .var-a .var-b-only { display: none !important; }
-  .var-b .var-a-only { display: none !important; }
-
-  /* ─── SCROLL REVEAL ─── */
-  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .reveal.visible { opacity: 1; transform: none; }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    nav { padding: 16px 20px; }
-    .nav-links { gap: 16px; }
-    #hero { padding: 0 20px 60px; }
-    .var-a .gallery-grid { grid-template-columns: 1fr; }
-    .var-b .gallery-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
-    .var-b .photo-item:first-child { grid-row: auto; }
-    .about-inner { grid-template-columns: 1fr; gap: 40px; }
-    #about, #gallery, #contact { padding: 60px 20px; }
-    footer { padding: 24px 20px; flex-direction: column; gap: 12px; text-align: center; }
-  }
-</style>
 </head>
 <body class="var-a scanlines-on">
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<div id="scanlines"></div>
+<a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+<div id="scanlines" aria-hidden="true"></div>
 
 <!-- Boot Screen -->
-<div id="boot">
+<div id="boot" role="status" aria-live="polite" aria-label="Boot do portfolio">
   <div id="boot-text"></div>
 </div>
 
 <!-- Lightbox -->
-<div id="lightbox">
-  <button class="lb-close" onclick="closeLightbox()">[ ESC ] FECHAR</button>
-  <button class="lb-nav lb-prev" onclick="lbNavigate(-1)">&#8592;</button>
-  <img id="lb-img" src="photos/waterfall.jpg" alt="" style="display:none">
-  <button class="lb-nav lb-next" onclick="lbNavigate(1)">&#8594;</button>
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Visualizador de foto" aria-hidden="true">
+  <button class="lb-close" type="button" onclick="closeLightbox()" aria-label="Fechar visualizador (Esc)">[ ESC ] FECHAR</button>
+  <button class="lb-nav lb-prev" type="button" onclick="lbNavigate(-1)" aria-label="Foto anterior">&#8592;</button>
+  <img id="lb-img" src="" alt="" style="display:none">
+  <button class="lb-nav lb-next" type="button" onclick="lbNavigate(1)" aria-label="Próxima foto">&#8594;</button>
   <div class="lb-info" id="lb-info"></div>
 </div>
 
 <!-- Nav -->
-<nav>
+<nav aria-label="Navegação principal">
   <a class="nav-logo" href="#hero"><span>~/</span>paiva</a>
   <div class="nav-links">
     <a href="#gallery">galeria</a>
     <a href="#about">sobre</a>
     <a href="#contact">contato</a>
+    <button id="theme-toggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Alternar tema claro/escuro">[ LIGHT ]</button>
   </div>
 </nav>
 
+<main id="main">
+
 <!-- Hero -->
-<section id="hero">
-  <div class="hero-bg" id="hero-bg"></div>
-  <div class="hero-overlay"></div>
-  <div class="hero-grid-overlay"></div>
+<section id="hero" aria-label="Capa">
+  <div class="hero-bg" id="hero-bg" aria-hidden="true"></div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+  <div class="hero-grid-overlay" aria-hidden="true"></div>
 
   <!-- Variant A -->
   <div class="hero-content var-a-only">
     <div class="var-a hero-prompt">
-      paiva@portfolio:~<span class="blink">█</span>
+      paiva@portfolio:~<span class="blink" aria-hidden="true">█</span>
     </div>
     <h1 class="var-a hero-title">
       VISUAL<br><span class="acc">FRAMES</span>
@@ -828,40 +131,50 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 </section>
 
 <!-- Gallery -->
-<section id="gallery">
+<section id="gallery" aria-labelledby="gallery-heading">
   <div class="section-header reveal">
-    <span class="sh-prompt">>_</span>
-    <h2>ls ./gallery</h2>
+    <span class="sh-prompt" aria-hidden="true">>_</span>
+    <h2 id="gallery-heading">ls ./gallery</h2>
+  </div>
+
+  <div class="gallery-filters reveal" role="group" aria-label="Filtrar fotos por categoria">
+    <button class="gallery-filter active" type="button" data-filter="all"          aria-pressed="true">all<span class="fcount"></span></button>
+    <button class="gallery-filter"        type="button" data-filter="street"       aria-pressed="false">street<span class="fcount"></span></button>
+    <button class="gallery-filter"        type="button" data-filter="nature"       aria-pressed="false">natureza<span class="fcount"></span></button>
+    <button class="gallery-filter"        type="button" data-filter="architecture" aria-pressed="false">arquitetura<span class="fcount"></span></button>
+    <button class="gallery-filter"        type="button" data-filter="night"        aria-pressed="false">noite<span class="fcount"></span></button>
   </div>
 
   <div class="gallery-grid">
 
     <!-- Photo 1 -->
-    <div class="photo-item reveal" onclick="openLightbox('photos/waterfall.jpg','IMG_0042.RAW — Cachoeira, Mata Atlântica')">
-      <img src="photos/waterfall.jpg" alt="Cachoeira" loading="lazy">
-      <div class="photo-overlay">
-        <!-- Variant A -->
+    <div class="photo-item reveal" data-category="nature" onclick="openLightbox('photos/waterfall.jpg','IMG_0042.RAW — Cachoeira, Mata Atlântica')" tabindex="0" role="button" aria-label="Abrir foto: Cachoeira, Mata Atlântica">
+      <picture>
+        <source srcset="photos/waterfall.webp" type="image/webp">
+        <img src="photos/waterfall.jpg" alt="Cachoeira na Mata Atlântica" loading="lazy" decoding="async" width="1600" height="1200">
+      </picture>
+      <div class="photo-overlay" aria-hidden="true">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0042.RAW</div>
           <div class="photo-exif">
             <span data-key="local">Mata Atlântica</span>
-            <span data-key="camera">Canon SL3</span>
+            <span data-key="câmera">Canon SL3</span>
             <span data-key="focal">24mm  f/2.8  1/200s</span>
             <span data-key="iso">ISO 400</span>
           </div>
         </div>
-        <!-- Variant B -->
-        <div class="var-b-only var-b photo-coords">
-          −23.5° S · −46.6° W<br>Cachoeira · 2025
-        </div>
+        <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Cachoeira · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/waterfall.jpg','IMG_0042.RAW — Cachoeira, Mata Atlântica')">OPEN</button>
+      <button class="photo-open-btn" type="button" onclick="event.stopPropagation(); openLightbox('photos/waterfall.jpg','IMG_0042.RAW — Cachoeira, Mata Atlântica')" aria-label="Abrir foto em tela cheia">OPEN</button>
     </div>
 
     <!-- Photo 2 -->
-    <div class="photo-item reveal" onclick="openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')">
-      <img src="photos/centro-sp.jpg" alt="Centro SP ao pôr do sol" loading="lazy">
-      <div class="photo-overlay">
+    <div class="photo-item reveal" data-category="architecture" onclick="openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')" tabindex="0" role="button" aria-label="Abrir foto: Centro SP ao pôr do sol">
+      <picture>
+        <source srcset="photos/centro-sp.webp" type="image/webp">
+        <img src="photos/centro-sp.jpg" alt="Centro de São Paulo ao pôr do sol" loading="lazy" decoding="async" width="1600" height="1200">
+      </picture>
+      <div class="photo-overlay" aria-hidden="true">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0108.RAW</div>
           <div class="photo-exif">
@@ -873,13 +186,16 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         </div>
         <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Centro SP · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')">OPEN</button>
+      <button class="photo-open-btn" type="button" onclick="event.stopPropagation(); openLightbox('photos/centro-sp.jpg','IMG_0108.RAW — Centro SP, Pôr do Sol')" aria-label="Abrir foto em tela cheia">OPEN</button>
     </div>
 
     <!-- Photo 3 -->
-    <div class="photo-item reveal" onclick="openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')">
-      <img src="photos/vila-madalena.jpg" alt="SP urbano" loading="lazy">
-      <div class="photo-overlay">
+    <div class="photo-item reveal" data-category="street" onclick="openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')" tabindex="0" role="button" aria-label="Abrir foto: São Paulo urbano">
+      <picture>
+        <source srcset="photos/vila-madalena.webp" type="image/webp">
+        <img src="photos/vila-madalena.jpg" alt="Cena urbana em São Paulo" loading="lazy" decoding="async" width="1600" height="1200">
+      </picture>
+      <div class="photo-overlay" aria-hidden="true">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0237.RAW</div>
           <div class="photo-exif">
@@ -891,13 +207,16 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         </div>
         <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>SP Urbano · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')">OPEN</button>
+      <button class="photo-open-btn" type="button" onclick="event.stopPropagation(); openLightbox('photos/vila-madalena.jpg','IMG_0237.RAW — SP, Urbano')" aria-label="Abrir foto em tela cheia">OPEN</button>
     </div>
 
     <!-- Photo 4 -->
-    <div class="photo-item reveal" onclick="openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')">
-      <img src="photos/parque.jpg" alt="Mata Atlântica" loading="lazy">
-      <div class="photo-overlay">
+    <div class="photo-item reveal" data-category="nature" onclick="openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')" tabindex="0" role="button" aria-label="Abrir foto: Floresta da Mata Atlântica">
+      <picture>
+        <source srcset="photos/parque.webp" type="image/webp">
+        <img src="photos/parque.jpg" alt="Floresta da Mata Atlântica" loading="lazy" decoding="async" width="1600" height="1200">
+      </picture>
+      <div class="photo-overlay" aria-hidden="true">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0391.RAW</div>
           <div class="photo-exif">
@@ -909,13 +228,16 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         </div>
         <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>Floresta · 2025</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')">OPEN</button>
+      <button class="photo-open-btn" type="button" onclick="event.stopPropagation(); openLightbox('photos/parque.jpg','IMG_0391.RAW — Mata Atlântica, Floresta')" aria-label="Abrir foto em tela cheia">OPEN</button>
     </div>
 
     <!-- Photo 5 -->
-    <div class="photo-item reveal" onclick="openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')">
-      <img src="photos/pinacoteca.jpg" alt="SP à noite" loading="lazy">
-      <div class="photo-overlay">
+    <div class="photo-item reveal" data-category="night" onclick="openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')" tabindex="0" role="button" aria-label="Abrir foto: São Paulo à noite">
+      <picture>
+        <source srcset="photos/pinacoteca.webp" type="image/webp">
+        <img src="photos/pinacoteca.jpg" alt="São Paulo à noite" loading="lazy" decoding="async" width="1600" height="1200">
+      </picture>
+      <div class="photo-overlay" aria-hidden="true">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0502.RAW</div>
           <div class="photo-exif">
@@ -927,13 +249,16 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         </div>
         <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>SP Noite · 2024</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')">OPEN</button>
+      <button class="photo-open-btn" type="button" onclick="event.stopPropagation(); openLightbox('photos/pinacoteca.jpg','IMG_0502.RAW — SP, Noite')" aria-label="Abrir foto em tela cheia">OPEN</button>
     </div>
 
     <!-- Photo 6 -->
-    <div class="photo-item reveal" onclick="openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')">
-      <img src="photos/liberdade.jpg" alt="SP ao crepúsculo" loading="lazy">
-      <div class="photo-overlay">
+    <div class="photo-item reveal" data-category="street" onclick="openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')" tabindex="0" role="button" aria-label="Abrir foto: SP no crepúsculo">
+      <picture>
+        <source srcset="photos/liberdade.webp" type="image/webp">
+        <img src="photos/liberdade.jpg" alt="São Paulo ao crepúsculo" loading="lazy" decoding="async" width="1600" height="1200">
+      </picture>
+      <div class="photo-overlay" aria-hidden="true">
         <div class="var-a-only">
           <div class="photo-filename">IMG_0618.RAW</div>
           <div class="photo-exif">
@@ -945,17 +270,17 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         </div>
         <div class="var-b-only var-b photo-coords">−23.5° S · −46.6° W<br>SP Crepúsculo · 2024</div>
       </div>
-      <button class="photo-open-btn" onclick="event.stopPropagation(); openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')">OPEN</button>
+      <button class="photo-open-btn" type="button" onclick="event.stopPropagation(); openLightbox('photos/liberdade.jpg','IMG_0618.RAW — SP, Crepúsculo')" aria-label="Abrir foto em tela cheia">OPEN</button>
     </div>
 
   </div>
 </section>
 
 <!-- About -->
-<section id="about">
+<section id="about" aria-labelledby="about-heading">
   <div class="section-header reveal">
-    <span class="sh-prompt">>_</span>
-    <h2>cat ./about.md</h2>
+    <span class="sh-prompt" aria-hidden="true">>_</span>
+    <h2 id="about-heading">cat ./about.md</h2>
   </div>
 
   <div class="about-inner">
@@ -963,9 +288,9 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
     <!-- Variant A: terminal window -->
     <div class="var-a terminal-window reveal var-a-only">
       <div class="terminal-titlebar">
-        <div class="terminal-dot td-r"></div>
-        <div class="terminal-dot td-y"></div>
-        <div class="terminal-dot td-g"></div>
+        <div class="terminal-dot td-r" aria-hidden="true"></div>
+        <div class="terminal-dot td-y" aria-hidden="true"></div>
+        <div class="terminal-dot td-g" aria-hidden="true"></div>
         <span style="margin-left:8px">paiva — zsh — 80×24</span>
       </div>
       <div class="terminal-body">
@@ -981,7 +306,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
         <div>&nbsp;&nbsp;<span class="t-key">"bio"</span>: <span class="t-string">"Programador que encontrou<br>&nbsp;&nbsp;&nbsp;&nbsp;na fotografia uma forma de<br>&nbsp;&nbsp;&nbsp;&nbsp;debugar o mundo real."</span></div>
         <div>}</div>
         <div style="margin-top:12px"><span class="t-comment">// 2 séries ativas · 500+ frames arquivados</span></div>
-        <div><span class="t-prompt">~$</span> <span class="blink t-prompt">█</span></div>
+        <div><span class="t-prompt">~$</span> <span class="blink t-prompt" aria-hidden="true">█</span></div>
       </div>
     </div>
 
@@ -1005,7 +330,10 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
     <!-- Photo side -->
     <div class="about-img-wrap reveal" data-coords="−23.5° S · −46.6° W">
-      <img src="photos/waterfall.jpg" alt="Paiva" loading="lazy">
+      <picture>
+        <source srcset="photos/waterfall.webp" type="image/webp">
+        <img src="photos/waterfall.jpg" alt="Retrato de Paiva em ambiente natural" loading="lazy" decoding="async" width="1200" height="1600">
+      </picture>
       <div class="img-label var-a-only">paiva.jpg · 4:3</div>
     </div>
 
@@ -1013,56 +341,58 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 </section>
 
 <!-- Contact -->
-<section id="contact">
+<section id="contact" aria-labelledby="contact-heading">
   <div class="section-header reveal">
-    <span class="sh-prompt">>_</span>
-    <h2>./contact.sh</h2>
+    <span class="sh-prompt" aria-hidden="true">>_</span>
+    <h2 id="contact-heading">./contact.sh</h2>
   </div>
 
   <!-- Variant A -->
-  <div class="contact-inner var-a-only reveal">
+  <form class="contact-inner var-a-only reveal" onsubmit="event.preventDefault(); submitForm();" novalidate>
     <p class="var-a contact-intro">
       <span class="acc">$</span> Projetos, colaborações, publicações.<br>
       <span class="acc">$</span> Resposta em <span class="acc">24–48h</span> úteis.
     </p>
-    <div class="var-a cli-input-wrap">
+    <label class="var-a cli-input-wrap">
       <span class="cli-prompt-label">send-to:</span>
-      <input class="cli-input" type="text" placeholder="seu nome..." id="input-name">
-    </div>
-    <div class="var-a cli-input-wrap">
+      <input class="cli-input" type="text" placeholder="seu nome..." id="input-name" name="name" required autocomplete="name" aria-label="Seu nome">
+    </label>
+    <label class="var-a cli-input-wrap">
       <span class="cli-prompt-label">--email:</span>
-      <input class="cli-input" type="email" placeholder="seu@email.com" id="input-email">
-    </div>
+      <input class="cli-input" type="email" placeholder="seu@email.com" id="input-email" name="email" required autocomplete="email" aria-label="Seu email">
+    </label>
     <div class="var-a cli-input-wrap" style="align-items:flex-start">
-      <span class="cli-prompt-label" style="padding-top:14px">--msg:</span>
-      <textarea class="cli-input" rows="4" placeholder="mensagem..." id="input-msg" style="resize:none;padding-top:14px"></textarea>
-      <button class="cli-submit" onclick="submitForm()">ENVIAR →</button>
+      <label class="cli-prompt-label" for="input-msg" style="padding-top:14px">--msg:</label>
+      <textarea class="cli-input" rows="4" placeholder="mensagem..." id="input-msg" name="message" required style="resize:none;padding-top:14px" aria-label="Mensagem"></textarea>
+      <button class="cli-submit" type="submit">ENVIAR →</button>
     </div>
-    <div id="form-status" style="font-size:11px;color:var(--dim);margin-top:12px;letter-spacing:0.1em;min-height:20px"></div>
-  </div>
+    <div id="form-status" role="status" aria-live="polite" style="font-size:11px;color:var(--dim);margin-top:12px;letter-spacing:0.1em;min-height:20px"></div>
+  </form>
 
   <!-- Variant B -->
   <div class="contact-inner var-b-only reveal">
     <h2 class="var-b contact-headline">Vamos<br>criar<br><em>algo.</em></h2>
     <div class="var-b contact-links">
-      <a class="contact-link-item" href="/cdn-cgi/l/email-protection#7606171f001736131b171f1a5815191b">
+      <a class="contact-link-item" href="mailto:paiva@example.com">
         <span class="cli-num">01</span>
-        <span class="cli-service"><span class="__cf_email__" data-cfemail="c8b8a9a1bea988ada5a9a1a4e6aba7a5">[email&#160;protected]</span></span>
-        <span class="cli-arrow">→</span>
+        <span class="cli-service">paiva@example.com</span>
+        <span class="cli-arrow" aria-hidden="true">→</span>
       </a>
       <a class="contact-link-item" href="https://instagram.com/paiva_sk8" target="_blank" rel="noopener">
         <span class="cli-num">02</span>
         <span class="cli-service">@paiva_sk8</span>
-        <span class="cli-arrow">→</span>
+        <span class="cli-arrow" aria-hidden="true">→</span>
       </a>
       <a class="contact-link-item" href="https://github.com/kafune" target="_blank" rel="noopener">
         <span class="cli-num">03</span>
         <span class="cli-service">github.com/kafune</span>
-        <span class="cli-arrow">→</span>
+        <span class="cli-arrow" aria-hidden="true">→</span>
       </a>
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- Footer -->
 <footer>
@@ -1071,204 +401,30 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 </footer>
 
 <!-- Tweaks Panel -->
-<div id="tweaks-panel">
+<div id="tweaks-panel" aria-label="Painel de customização">
   <div class="tp-title">> TWEAKS</div>
   <div class="tp-row">
     <span class="tp-label">Variante</span>
     <div class="tp-toggle">
-      <button class="tp-opt active" data-v="A" onclick="setVariant('A',this)">A</button>
-      <button class="tp-opt" data-v="B" onclick="setVariant('B',this)">B</button>
+      <button class="tp-opt active" type="button" data-v="A" onclick="setVariant('A')">A</button>
+      <button class="tp-opt"        type="button" data-v="B" onclick="setVariant('B')">B</button>
     </div>
   </div>
   <div class="tp-row">
-    <span class="tp-label">Acento</span>
-    <input type="color" class="tp-color" id="tp-color" value="#39FF14" oninput="setAccent(this.value)">
+    <label class="tp-label" for="tp-color">Acento</label>
+    <input type="color" class="tp-color" id="tp-color" value="#39FF14" oninput="setAccent(this.value)" aria-label="Cor de acento">
   </div>
   <div class="tp-row">
-    <span class="tp-label">Scanlines</span>
+    <label class="tp-label" for="tp-scan">Scanlines</label>
     <input type="checkbox" class="tp-check" id="tp-scan" checked onchange="setScanlines(this.checked)">
   </div>
   <div class="tp-row">
-    <span class="tp-label">Cursor blink</span>
+    <label class="tp-label" for="tp-blink">Cursor blink</label>
     <input type="checkbox" class="tp-check" id="tp-blink" checked onchange="setCursorBlink(this.checked)">
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ─── CURSOR ───
-const cur = document.getElementById('cursor');
-const curR = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
-});
-function animRing() {
-  rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
-  curR.style.left = rx + 'px'; curR.style.top = ry + 'px';
-  requestAnimationFrame(animRing);
-}
-animRing();
-
-// ─── PARALLAX ───
-const heroBg = document.getElementById('hero-bg');
-window.addEventListener('scroll', () => {
-  const sy = window.scrollY;
-  if (heroBg) heroBg.style.transform = `scale(1.05) translateY(${sy * 0.3}px)`;
-});
-
-// ─── BOOT SEQUENCE ───
-const bootLines = [
-  'PAIVA OS v2.6.0 — Photography Stack',
-  '─────────────────────────────────────',
-  'Initializing visual renderer.......... OK',
-  'Loading gallery module................. OK',
-  'Mounting filesystem /photos............ OK',
-  'Found 6 RAW frames in /gallery......... OK',
-  'Calibrating color profile (sRGB)....... OK',
-  '─────────────────────────────────────',
-  'Ready.',
-  '',
-  '> Welcome to paiva.portfolio',
-];
-
-const bootEl = document.getElementById('boot-text');
-const bootDiv = document.getElementById('boot');
-
-function dismissBoot() {
-  bootDiv.classList.add('fade-out');
-  setTimeout(() => bootDiv.style.display = 'none', 900);
-}
-
-bootDiv.addEventListener('click', dismissBoot);
-
-async function runBoot() {
-  let skipped = false;
-  bootDiv.addEventListener('click', () => { skipped = true; }, { once: true });
-  for (let i = 0; i < bootLines.length; i++) {
-    if (skipped) break;
-    await new Promise(r => setTimeout(r, 90));
-    const line = document.createElement('div');
-    line.className = 'boot-line';
-    line.textContent = bootLines[i] || ' ';
-    bootEl.appendChild(line);
-    void line.offsetWidth;
-    line.style.opacity = '1';
-  }
-  await new Promise(r => setTimeout(r, skipped ? 0 : 600));
-  dismissBoot();
-}
-runBoot();
-
-// ─── SCROLL REVEAL ───
-const revEls = document.querySelectorAll('.reveal');
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-revEls.forEach(el => obs.observe(el));
-
-// ─── LIGHTBOX ───
-const photoList = [
-  { src: 'photos/waterfall.jpg',    info: 'IMG_0042.RAW — Cachoeira, Mata Atlântica' },
-  { src: 'photos/centro-sp.jpg',    info: 'IMG_0108.RAW — Centro SP, Pôr do Sol' },
-  { src: 'photos/vila-madalena.jpg',info: 'IMG_0237.RAW — SP, Urbano' },
-  { src: 'photos/parque.jpg',       info: 'IMG_0391.RAW — Mata Atlântica, Floresta' },
-  { src: 'photos/pinacoteca.jpg',   info: 'IMG_0502.RAW — SP, Noite' },
-  { src: 'photos/liberdade.jpg',    info: 'IMG_0618.RAW — SP, Crepúsculo' },
-];
-let currentPhotoIdx = 0;
-
-function openLightbox(src, info) {
-  currentPhotoIdx = photoList.findIndex(p => p.src === src);
-  if (currentPhotoIdx === -1) currentPhotoIdx = 0;
-  const lb = document.getElementById('lightbox');
-  const img = document.getElementById('lb-img');
-  const inf = document.getElementById('lb-info');
-  img.src = src; img.style.display = 'block';
-  inf.textContent = info;
-  lb.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function lbNavigate(dir) {
-  currentPhotoIdx = (currentPhotoIdx + dir + photoList.length) % photoList.length;
-  const p = photoList[currentPhotoIdx];
-  document.getElementById('lb-img').src = p.src;
-  document.getElementById('lb-info').textContent = p.info;
-}
-document.getElementById('lightbox').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeLightbox();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLightbox();
-  if (document.getElementById('lightbox').classList.contains('open')) {
-    if (e.key === 'ArrowRight') lbNavigate(1);
-    if (e.key === 'ArrowLeft')  lbNavigate(-1);
-  }
-});
-
-// ─── FORM ───
-function submitForm() {
-  const n = document.getElementById('input-name').value;
-  const e = document.getElementById('input-email').value;
-  const m = document.getElementById('input-msg').value;
-  const st = document.getElementById('form-status');
-  if (!n || !e || !m) { st.style.color = '#ff5555'; st.textContent = '// erro: campos obrigatórios não preenchidos'; return; }
-  st.style.color = 'var(--accent)'; st.textContent = '// mensagem enviada com sucesso → resposta em 24h';
-}
-
-// ─── TWEAKS ───
-let tweaks = Object.assign({}, TWEAK_DEFAULTS, JSON.parse(localStorage.getItem('paiva_tweaks') || '{}'));
-
-function setVariant(v, btn) {
-  document.body.classList.remove('var-a', 'var-b');
-  document.body.classList.add('var-' + v.toLowerCase());
-  document.querySelectorAll('.tp-opt').forEach(o => o.classList.toggle('active', o.dataset.v === v));
-  tweaks.variant = v;
-  persist();
-}
-function setAccent(c) {
-  document.documentElement.style.setProperty('--accent', c);
-  tweaks.accentColor = c;
-  persist();
-}
-function setScanlines(on) {
-  document.body.classList.toggle('scanlines-on', on);
-  tweaks.scanlines = on;
-  persist();
-}
-function setCursorBlink(on) {
-  document.querySelectorAll('.blink').forEach(el => el.style.animationPlayState = on ? 'running' : 'paused');
-  tweaks.cursorBlink = on;
-  persist();
-}
-function persist() {
-  localStorage.setItem('paiva_tweaks', JSON.stringify(tweaks));
-  window.parent.postMessage({ type: '__edit_mode_set_keys', edits: tweaks }, '*');
-}
-
-// Apply saved tweaks
-(function applyTweaks() {
-  setVariant(tweaks.variant, null);
-  setAccent(tweaks.accentColor);
-  setScanlines(tweaks.scanlines);
-  setCursorBlink(tweaks.cursorBlink);
-  document.getElementById('tp-color').value = tweaks.accentColor;
-  document.getElementById('tp-scan').checked = tweaks.scanlines;
-  document.getElementById('tp-blink').checked = tweaks.cursorBlink;
-  document.querySelectorAll('.tp-opt').forEach(o => o.classList.toggle('active', o.dataset.v === tweaks.variant));
-})();
-
-// Tweaks panel toggle
-window.addEventListener('message', e => {
-  if (e.data?.type === '__activate_edit_mode') document.getElementById('tweaks-panel').classList.add('visible');
-  if (e.data?.type === '__deactivate_edit_mode') document.getElementById('tweaks-panel').classList.remove('visible');
-});
-window.parent.postMessage({ type: '__edit_mode_available' }, '*');
-</script>
+<script src="js/tweaks.js" defer></script>
+<script src="js/app.js" defer></script>
 </body>
 </html>
-
